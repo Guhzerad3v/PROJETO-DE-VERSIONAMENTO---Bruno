@@ -18,7 +18,7 @@ Responsável pelo gerenciamento de itens, limites da mochila e equipamentos.
 
 ###  ISSUE 2 - Sistema de Luta e Magia
 Responsável pela matemática do combate, vida, mana e turnos.
-- [x] **Step 1:** Classes base de Entidades (Personagem e Inimigos) com atributos.
+- [x] **Step 1:** Classes base de Entidades (Personagem e Inimigos) com atributos. -`Classes Base.py`
 - [ ] **Step 2:** Loop principal do Sistema de Turnos (Atacar, Defender, Fugir).
 - [ ] **Step 3:** Sistema de Magias e consumo de Mana.
 - [ ] **Step 4:** Integração com a Issue 1 (Uso de itens em combate e cálculo de dano com arma equipada).
