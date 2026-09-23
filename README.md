@@ -25,7 +25,7 @@ Responsável pela matemática do combate, vida, mana e turnos.
 
 ###  ISSUE 3 - Narrativa, Storytelling e Diálogos
 Responsável pela alma do jogo, classes do jogador e a progressão da história.
-- [ ] **Step 1:** Motor básico de textos, pausas dramáticas e exibição de diálogos.
+- [x] **Step 1:** Motor básico de textos, pausas dramáticas e exibição de diálogos.
 - [ ] **Step 2:** Sistema de Seleção de Classes iniciais.
 - [ ] **Step 3:** Árvore de Eventos (Decisões e ramificações da história).
 - [ ] **Step 4:** Eventos dinâmicos (Encontrar itens, iniciar combates).
