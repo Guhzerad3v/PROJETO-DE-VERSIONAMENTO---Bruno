@@ -1,4 +1,5 @@
 import time
+import random
 
 
 def escrever(texto, velocidade=0.03):
@@ -63,6 +64,8 @@ def escolher_classe():
 
 
 # árvore de eventos: cada cena tem um texto e opções que levam a outras cenas
+# extras: "item" (cena que dá um item), "requer" (opção que exige um item)
+# e "combate" (cena que inicia uma luta)
 EVENTOS = {
     "inicio": {
         "texto": "A praça de Cinzas está cheia de gente, e ninguém faz barulho. Todos estão "
@@ -108,8 +111,10 @@ EVENTOS = {
     "trilha": {
         "texto": "A tinta preta serpenteia entre as casas. Em cada porta por onde passa, há "
                  "uma marca de mão na madeira, do tamanho de uma mão de criança. Você conta "
-                 "doze marcas. A trilha termina no poço velho e para de repente, como se o "
-                 "que a deixou tivesse descido.",
+                 "doze marcas. Na porta da terceira casa, uma vela de cera preta ainda queima, "
+                 "e a chama não projeta sombra nenhuma. A trilha termina no poço velho e para "
+                 "de repente, como se o que a deixou tivesse descido.",
+        "item": "Vela de Cera Preta",
         "opcoes": {
             "1": {"texto": "Ir até o poço", "destino": "poco"},
             "2": {"texto": "Voltar para a praça", "destino": "inicio"},
@@ -139,27 +144,112 @@ EVENTOS = {
                  "No fundo, dezenas de sombras estão penduradas nas paredes, todas as da vila, "
                  "balançando devagar como roupas num varal. No meio delas, há uma figura de "
                  "costas, com a sua altura e o seu jeito de ficar em pé. Ela se vira devagar. "
-                 "E a sua sombra, aos seus pés, estende a mão para ela... (continua)",
-        "opcoes": {},  # sem opções = fim da história por enquanto
+                 "E a sua sombra, aos seus pés, estende a mão para ela.",
+        "opcoes": {
+            "1": {"texto": "Encarar a figura", "destino": "figura"},
+            # esta opção só aparece se o jogador tiver a vela na mochila
+            "2": {"texto": "Acender a vela de cera preta", "destino": "vela", "requer": "Vela de Cera Preta"},
+        },
+    },
+    "vela": {
+        "texto": "Você acende a vela. A chama preta não faz luz, faz memória. Todas as sombras "
+                 "das paredes viram o rosto para a figura, e agora você vê o rosto dela: é você "
+                 "aos sete anos, chorando. 'Eu fiquei aqui, sozinho, quando você foi embora', "
+                 "ela sussurra. 'Não me deixa de novo.'",
+        "opcoes": {
+            "1": {"texto": "Estender a mão e trazê-lo de volta", "destino": "final_paz"},
+            "2": {"texto": "Não confiar e enfrentá-lo", "destino": "figura"},
+        },
+    },
+    "figura": {
+        "texto": "A figura sorri com a sua boca. 'Eu sou a parte de você que ficou aqui "
+                 "embaixo quando você cresceu e esqueceu de mim. Levei as sombras da vila "
+                 "para fazer um corpo. Agora só falta a sua.' Ela avança.",
+        # esta cena inicia um combate e depois vai para o final de vitória ou de derrota
+        "combate": {"inimigo": "O Outro Betinha", "vitoria": "final_luta", "derrota": "final_derrota"},
+        "opcoes": {},
+    },
+    "final_paz": {
+        "texto": "Você estende a mão. A criança segura. Uma por uma, as sombras se soltam das "
+                 "paredes e sobem pela corda até a superfície. Quando você sai do poço, a vila "
+                 "inteira pisca como quem acorda: Anselmo olha para a vassoura e começa a rir. "
+                 "Só você percebe que agora tem duas sombras no chão, e as duas estão sorrindo. "
+                 "FIM: mas a lenda do Betinha continua.",
+        "opcoes": {},
+    },
+    "final_luta": {
+        "texto": "Seu golpe atravessa a figura, que se desfaz em fumaça preta. As sombras "
+                 "sobem pela corda e a vila desperta. Mas, ao sair do poço, você nota que a "
+                 "sua sombra demora um pouco para te seguir. E, no chão, ela não faz o mesmo "
+                 "gesto que você. FIM... ou será que não?",
+        "opcoes": {},
+    },
+    "final_derrota": {
+        "texto": "Você cai de joelhos. A figura encosta a mão fria na sua testa: 'Descansa.' "
+                 "Quando abre os olhos, você está na praça, varrendo uma pedra, sorrindo. Não "
+                 "lembra por que sente tanta falta de alguma coisa. FIM: você esqueceu quem era.",
+        "opcoes": {},
     },
 }
 
 
-def rodar_evento(nome_evento):
-    # mostra o evento, pede a escolha e vai para o próximo até a história acabar
+def encontrar_item(item, jogador):
+    # coloca o item na mochila (só uma vez)
+    if item not in jogador["mochila"]:
+        jogador["mochila"].append(item)
+        print(f"*** Você guardou na mochila: {item} ***")
+        pausa()
+
+
+def iniciar_combate(nome_inimigo, jogador):
+    # PROVISÓRIO: na integração final, a Main troca isto pelo sistema de luta da Issue 2
+    # aqui a chance de vitória depende do ataque da classe escolhida
+    classe = jogador["classe"]
+    print()
+    escrever(f"*** COMBATE: {classe['nome']} contra {nome_inimigo}! ***")
+    pausa()
+    chance = 0.4 + classe["ataque"] / 40
+    return random.random() < chance
+
+
+def opcoes_disponiveis(evento, jogador):
+    # esconde opções que exigem um item que o jogador ainda não tem
+    disponiveis = {}
+    for numero, opcao in evento["opcoes"].items():
+        item_exigido = opcao.get("requer")
+        if item_exigido is None or item_exigido in jogador["mochila"]:
+            disponiveis[numero] = opcao
+    return disponiveis
+
+
+def rodar_evento(nome_evento, jogador):
+    # mostra o evento, dá itens, inicia combates e vai para o próximo até a história acabar
     while True:
         evento = EVENTOS[nome_evento]
         print()
         escrever(evento["texto"])
         pausa()
-        if not evento["opcoes"]:
+
+        if "item" in evento:
+            encontrar_item(evento["item"], jogador)
+
+        if "combate" in evento:
+            combate = evento["combate"]
+            if iniciar_combate(combate["inimigo"], jogador):
+                nome_evento = combate["vitoria"]
+            else:
+                nome_evento = combate["derrota"]
+            continue
+
+        opcoes = opcoes_disponiveis(evento, jogador)
+        if not opcoes:
             return
-        for numero, opcao in evento["opcoes"].items():
+        for numero, opcao in opcoes.items():
             print(f'[{numero}] {opcao["texto"]}')
         escolha = input("O que você faz? ")
-        while escolha not in evento["opcoes"]:
+        while escolha not in opcoes:
             escolha = input("Opção inválida, tente de novo: ")
-        nome_evento = evento["opcoes"][escolha]["destino"]
+        nome_evento = opcoes[escolha]["destino"]
 
 
 if __name__ == "__main__":
@@ -179,4 +269,7 @@ if __name__ == "__main__":
     print()
     escrever(f'Betinha, o {classe["nome"]}, respira fundo e caminha até a praça...')
     pausa()
-    rodar_evento("inicio")
+    jogador = {"classe": classe, "mochila": []}
+    rodar_evento("inicio", jogador)
+    print()
+    print("Itens na mochila:", ", ".join(jogador["mochila"]) or "nenhum")
