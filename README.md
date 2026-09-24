@@ -27,8 +27,8 @@ Responsável pela matemática do combate, vida, mana e turnos.
 Responsável pela alma do jogo, classes do jogador e a progressão da história.
 - [x] **Step 1:** Motor básico de textos, pausas dramáticas e exibição de diálogos.
 - [x] **Step 2:** Sistema de Seleção de Classes iniciais.
-- [ ] **Step 3:** Árvore de Eventos (Decisões e ramificações da história).
-- [ ] **Step 4:** Eventos dinâmicos (Encontrar itens, iniciar combates).
+- [x] **Step 3:** Árvore de Eventos (Decisões e ramificações da história).
+- [x] **Step 4:** Eventos dinâmicos (Encontrar itens, iniciar combates).
 
 ###  MAIN - O Coração do Jogo
 - [ ] Construir o Menu Principal.
