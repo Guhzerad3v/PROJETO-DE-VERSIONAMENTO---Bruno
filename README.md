@@ -20,8 +20,8 @@ Responsável pelo gerenciamento de itens, limites da mochila e equipamentos.
 Responsável pela matemática do combate, vida, mana e turnos.
 - [x] **Step 1:** Classes base de Entidades (Personagem e Inimigos) com atributos. -`Classes Base.py`
 - [x] **Step 2:** Loop principal do Sistema de Turnos (Atacar, Defender, Fugir).
-- [ ] **Step 3:** Sistema de Magias e consumo de Mana.
-- [ ] **Step 4:** Integração com a Issue 1 (Uso de itens em combate e cálculo de dano com arma equipada).
+- [x] **Step 3:** Sistema de Magias e consumo de Mana.
+- [x] **Step 4:** Integração com a Issue 1 (Uso de itens em combate e cálculo de dano com arma equipada).
 
 ###  ISSUE 3 - Narrativa, Storytelling e Diálogos
 Responsável pela alma do jogo, classes do jogador e a progressão da história.
